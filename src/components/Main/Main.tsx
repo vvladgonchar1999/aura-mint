@@ -8,10 +8,10 @@ export default function AboutProject() {
       <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
         
         <div>
-          <h2 className="text-4xl font-bold mb-6">Proof of Vibe ✨</h2>
+          <h2 className="text-4xl font-bold mb-6">Aura Mint</h2>
           <p className="text-lg mb-6 text-gray-300">
             В епоху цифрової взаємодії нам бракує справжніх емоцій у Web3. 
-            <span className="text-white font-semibold"> Proof of Vibe</span> створено, щоб заповнити цю прогалину.
+            <span className="text-white font-semibold"> Aura Mint</span> створено, щоб заповнити цю прогалину.
           </p>
           <ul className="list-disc list-inside text-gray-400 space-y-4">
             <li>

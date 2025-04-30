@@ -12,7 +12,7 @@ export default function Navbar() {
 
             <div className="flex items-center gap-2">
                 <Link href="/" className="text-2xl font-bold">
-                    ✨ Proof of Vibe
+                    Aura Mint
                 </Link>
             </div>
 

@@ -10,6 +10,9 @@
   },
   "dependencies": {
     "@metaplex-foundation/js": "^0.20.1",
+    "@metaplex-foundation/umi-bundle-defaults": "^1.2.0",
+    "@metaplex-foundation/umi-signer-wallet-adapters": "^1.2.0",
+    "@metaplex-foundation/umi-uploader-nft-storage": "^1.2.0",
     "@solana/spl-token": "^0.4.13",
     "@solana/wallet-adapter-react-ui": "^0.9.37",
     "@solana/wallet-adapter-wallets": "^0.19.36",

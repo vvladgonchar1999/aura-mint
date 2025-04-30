@@ -1,25 +1,72 @@
-import { Metaplex, walletAdapterIdentity } from "@metaplex-foundation/js";
-import { Connection, clusterApiUrl } from "@solana/web3.js";
 import { WalletContextState } from "@solana/wallet-adapter-react";
+import { Metaplex, walletAdapterIdentity } from "@metaplex-foundation/js";
+import { Connection, clusterApiUrl, } from "@solana/web3.js";
 
-const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
 
-export async function mintVibeNFT(wallet: WalletContextState, vibePhrase: string): Promise<string> {
-  if (!wallet.publicKey || !wallet.signTransaction || !wallet.signAllTransactions || !wallet.wallet?.adapter) {
-    throw new Error("Wallet not connected properly");
+export async function mintAndSendVibeNFT(
+  wallet: WalletContextState,
+  message: string,
+  photo: Blob
+): Promise<string> {
+  if (!wallet || !wallet.publicKey || !wallet.signTransaction) {
+    throw new Error("Wallet not connected or incomplete");
   }
 
-  const metaplex = Metaplex.make(connection)
-    .use(walletAdapterIdentity(wallet.wallet.adapter)); 
+  const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
+
+  const metaplex = Metaplex.make(connection).use(walletAdapterIdentity(wallet));
+
+  
+  const file = new File([photo], "vibe-photo.png", { type: "image/png" });
+
+  
+  const imageUrl = await uploadToPinata(file, "vibe-photo.png");
+
+ 
+  const metadata = {
+    name: "Vibe NFT",
+    symbol: "VIBE",
+    description: message,
+    image: imageUrl,
+    properties: {
+      files: [{ uri: imageUrl, type: "image/png" }],
+      category: "image",
+    },
+  };
+
+  const metadataUri = await uploadToPinata(
+    new Blob([JSON.stringify(metadata)], { type: "application/json" }),
+    "metadata.json"
+  );
 
   const { nft } = await metaplex.nfts().create({
-    uri: "https://arweave.net/your-fake-uri", // тимчасова ссилка  
-    name: `Vibe: ${vibePhrase.substring(0, 20)}...`,
-    sellerFeeBasisPoints: 0,
+    uri: metadataUri,
+    name: `Vibe: ${message.slice(0, 20)}`,
     symbol: "VIBE",
+    sellerFeeBasisPoints: 0,    
+    tokenOwner: wallet.publicKey,
   });
 
-  console.log("NFT created:", nft);
+  return nft.address.toBase58();
+}
 
-  return nft.address.toString();
+
+export async function uploadToPinata(file: Blob | File, filename: string): Promise<string> {
+  const formData = new FormData();
+  formData.append("file", file, filename);
+
+  const res = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_PINATA_JWT}`,
+    },
+    body: formData,
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to upload to Pinata");
+  }
+
+  const data = await res.json();
+  return `https://gateway.pinata.cloud/ipfs/${data.IpfsHash}`;
 }
