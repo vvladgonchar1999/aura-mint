@@ -5,7 +5,8 @@ import { Connection, clusterApiUrl, } from "@solana/web3.js";
 
 export async function mintAndSendVibeNFT(
   wallet: WalletContextState,
-  message: string,
+  name: string,
+  message: string,  
   photo: Blob
 ): Promise<string> {
   if (!wallet || !wallet.publicKey || !wallet.signTransaction) {
@@ -24,7 +25,7 @@ export async function mintAndSendVibeNFT(
 
  
   const metadata = {
-    name: "Vibe NFT",
+    name: name, 
     symbol: "VIBE",
     description: message,
     image: imageUrl,
@@ -41,7 +42,7 @@ export async function mintAndSendVibeNFT(
 
   const { nft } = await metaplex.nfts().create({
     uri: metadataUri,
-    name: `Vibe: ${message.slice(0, 20)}`,
+    name: name,
     symbol: "VIBE",
     sellerFeeBasisPoints: 0,    
     tokenOwner: wallet.publicKey,
