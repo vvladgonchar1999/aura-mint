@@ -1,9 +1,11 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { mintAndSendVibeNFT } from "@/lib/mint-vibe";
-import { FiCamera, FiUploadCloud, FiCheckCircle, FiXCircle } from "react-icons/fi";
+import { getOrCreateUserCollection } from "@/lib/collection-utils";
+import { PublicKey } from "@solana/web3.js";
+import { FiCamera, FiUploadCloud } from "react-icons/fi";
 
 export default function CreateVibeForm() {
   const wallet = useWallet();
@@ -13,10 +15,25 @@ export default function CreateVibeForm() {
   const [loading, setLoading] = useState(false);
   const [photo, setPhoto] = useState<Blob | null>(null);
   const [mode, setMode] = useState<"camera" | "upload" | null>(null);
+  const [collectionAddress, setCollectionAddress] = useState<PublicKey | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const streamRef = useRef<MediaStream | null>(null); // Додаємо референс для потоку камери
+  const streamRef = useRef<MediaStream | null>(null);
+
+  useEffect(() => {
+    const setupCollection = async () => {
+      if (wallet.connected && wallet.publicKey) {
+        try {
+          const col = await getOrCreateUserCollection(wallet);
+          setCollectionAddress(col);
+        } catch (err) {
+          console.error("Collection error:", err);
+        }
+      }
+    };
+    setupCollection();
+  }, [wallet.connected]);
 
   const startCamera = async () => {
     setMode("camera");
@@ -25,7 +42,7 @@ export default function CreateVibeForm() {
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         videoRef.current.play();
-        streamRef.current = stream; // Зберігаємо потік у референсі
+        streamRef.current = stream;
       }
     } catch (error) {
       console.error("Error accessing camera:", error);
@@ -78,13 +95,12 @@ export default function CreateVibeForm() {
     setLoading(true);
     setStatus("Minting and sending NFT...");
 
-    // Зупиняємо камеру та видаляємо прев'ю перед мінтом
     stopCamera();
     setPhoto(null);
     setMode(null);
 
     try {
-      const mint = await mintAndSendVibeNFT(wallet, nftName, message, photo);
+      const mint = await mintAndSendVibeNFT(wallet, nftName, message, photo, collectionAddress);
       setStatus(`NFT minted successfully! Mint Address: ${mint}`);
     } catch (error) {
       console.error("Error minting and sending NFT:", error);

@@ -1,13 +1,14 @@
 import { WalletContextState } from "@solana/wallet-adapter-react";
 import { Metaplex, walletAdapterIdentity } from "@metaplex-foundation/js";
-import { Connection, clusterApiUrl, } from "@solana/web3.js";
+import { Connection, PublicKey, clusterApiUrl, } from "@solana/web3.js";
 
 
 export async function mintAndSendVibeNFT(
   wallet: WalletContextState,
   name: string,
   message: string,  
-  photo: Blob
+  photo: Blob,
+  collectionAddress?: PublicKey | null
 ): Promise<string> {
   if (!wallet || !wallet.publicKey || !wallet.signTransaction) {
     throw new Error("Wallet not connected or incomplete");
@@ -23,6 +24,7 @@ export async function mintAndSendVibeNFT(
   
   const imageUrl = await uploadToPinata(file, "vibe-photo.png");
 
+  
  
   const metadata = {
     name: name, 
@@ -40,13 +42,28 @@ export async function mintAndSendVibeNFT(
     "metadata.json"
   );
 
+  const collection = new PublicKey(collectionAddress!)
+
   const { nft } = await metaplex.nfts().create({
     uri: metadataUri,
     name: name,
     symbol: "VIBE",
     sellerFeeBasisPoints: 0,    
     tokenOwner: wallet.publicKey,
+    collection,
   });
+
+  if (collection) {
+    try {
+      await metaplex.nfts().verifyCollection({
+        mintAddress: nft.address,
+        collectionMintAddress: new PublicKey(collectionAddress!),
+        isSizedCollection: true,
+      });
+    } catch (error) {
+      console.warn("Collection verification failed:", error);
+    }
+  }
 
   return nft.address.toBase58();
 }
@@ -70,4 +87,27 @@ export async function uploadToPinata(file: Blob | File, filename: string): Promi
 
   const data = await res.json();
   return `https://gateway.pinata.cloud/ipfs/${data.IpfsHash}`;
+}
+
+
+export async function createUserCollection(
+  wallet: WalletContextState,
+  name: string = "My Vibe Collection"
+): Promise<string> {
+  if (!wallet || !wallet.publicKey || !wallet.signTransaction) {
+    throw new Error("Wallet not connected or incomplete");
+  }
+
+  const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
+  const metaplex = Metaplex.make(connection).use(walletAdapterIdentity(wallet));
+
+  const { nft } = await metaplex.nfts().create({
+    uri: "https://arweave.net/placeholder-metadata",
+    name,
+    symbol: "VIBE",
+    sellerFeeBasisPoints: 0,
+    isCollection: true,    
+  });
+
+  return nft.address.toBase58();
 }
