@@ -8,7 +8,7 @@ export async function mintAndSendVibeNFT(
   name: string,
   message: string,  
   photo: Blob,
-  collectionAddress?: PublicKey | null
+  collectionAddress?:string
 ): Promise<string> {
   if (!wallet || !wallet.publicKey || !wallet.signTransaction) {
     throw new Error("Wallet not connected or incomplete");

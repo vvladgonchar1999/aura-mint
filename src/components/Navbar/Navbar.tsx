@@ -19,16 +19,16 @@ export default function Navbar() {
 
             <div className="flex items-center gap-6">
                 <Link href="/trending" className="hover:text-gray-400 transition">
-                    Вайби місяця
+                    Vibe of the month
                 </Link>
 
                 {connected && (
                     <>
                         <Link href="/create" className="hover:text-gray-400 transition">
-                            Створити вайб
+                            Create vibe
                         </Link>
                         <Link href="/my-vibes" className="hover:text-gray-400 transition">
-                            Мої вайби
+                            My vibe
                         </Link>
                     </>
                 )}
