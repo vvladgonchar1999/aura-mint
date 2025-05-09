@@ -42,7 +42,7 @@ export async function mintAndSendVibeNFT(
     "metadata.json"
   );
 
-  const collection = new PublicKey(collectionAddress!)
+  //const collection = new PublicKey(collectionAddress!)
 
   const { nft } = await metaplex.nfts().create({
     uri: metadataUri,
@@ -50,20 +50,20 @@ export async function mintAndSendVibeNFT(
     symbol: "VIBE",
     sellerFeeBasisPoints: 0,    
     tokenOwner: wallet.publicKey,
-    collection,
+    //collection,
   });
 
-  if (collection) {
-    try {
-      await metaplex.nfts().verifyCollection({
-        mintAddress: nft.address,
-        collectionMintAddress: new PublicKey(collectionAddress!),
-        isSizedCollection: true,
-      });
-    } catch (error) {
-      console.warn("Collection verification failed:", error);
-    }
-  }
+  // if (collection) {
+  //   try {
+  //     await metaplex.nfts().verifyCollection({
+  //       mintAddress: nft.address,
+  //       collectionMintAddress: new PublicKey(collectionAddress!),
+  //       isSizedCollection: true,
+  //     });
+  //   } catch (error) {
+  //     console.warn("Collection verification failed:", error);
+  //   }
+  // }
 
   return nft.address.toBase58();
 }

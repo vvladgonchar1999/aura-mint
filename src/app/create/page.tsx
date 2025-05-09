@@ -96,10 +96,10 @@ export default function CreateVibeForm() {
       return;
     }
 
-    if (!collectionAddress) {
-      alert("Please create your NFT collection first.");
-      return;
-    }
+    // if (!collectionAddress) {
+    //   alert("Please create your NFT collection first.");
+    //   return;
+    // }
 
     setLoading(true);
     setStatus("Minting and sending NFT...");
@@ -109,7 +109,7 @@ export default function CreateVibeForm() {
     setMode(null);
 
     try {
-      const mint = await mintAndSendVibeNFT(wallet, nftName, message, photo, collectionAddress);
+      const mint = await mintAndSendVibeNFT(wallet, nftName, message, photo, ); //collectionAddress
       setStatus(`NFT minted successfully! Mint Address: ${mint}`);
     } catch (error) {
       console.error("Error minting and sending NFT:", error);

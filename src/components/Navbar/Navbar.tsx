@@ -18,7 +18,7 @@ export default function Navbar() {
 
 
             <div className="flex items-center gap-6">
-                <Link href="/trending" className="hover:text-gray-400 transition">
+                <Link href="/monthvibe" className="hover:text-gray-400 transition">
                     Vibe of the month
                 </Link>
 
