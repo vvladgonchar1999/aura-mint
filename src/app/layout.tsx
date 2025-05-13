@@ -3,7 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar/Navbar";
 import { SolanaConnection } from "@/components/Solana/SolanaConnection";
 export const metadata: Metadata = {
-  title: "Proof of Vibe",
+  title: "Aura mint",
   description: "A unique NFT collection capturing the mood, energy, and vibe of an event, group chat, or moment. ",
 };
 
