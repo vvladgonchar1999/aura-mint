@@ -1,61 +1,63 @@
-import { Metaplex, walletAdapterIdentity } from "@metaplex-foundation/js";
-import { PublicKey, Connection, clusterApiUrl } from "@solana/web3.js";
-import { useEffect, useState } from "react";
-import { useWallet } from "@solana/wallet-adapter-react";
-
-const COLLECTION_TAG = "vibe-collection";
-
-// export async function getOrCreateUserCollection(wallet: any): Promise<PublicKey> {
-//   const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
-//   const metaplex = Metaplex.make(connection).use(walletAdapterIdentity(wallet));
-
-//   const existingNfts = await metaplex.nfts().findAllByOwner({ owner: wallet.publicKey });
-//   const collection = existingNfts.find((nft) => nft.name.includes(COLLECTION_TAG) && nft.collectionDetails);
-
-//   if (collection) return collection.address;
-
-//   const { nft } = await metaplex.nfts().create({
-//     name: `${COLLECTION_TAG}-${wallet.publicKey.toBase58().slice(0, 4)}`,
-//     symbol: "VIBE",
-//     uri: "https://arweave.net/some-placeholder-json", 
-//     sellerFeeBasisPoints: 0,
-//     isCollection: true,
-//   });
-
-//   return nft.address;
-// }
+import {
+  Metaplex,
+  keypairIdentity,
+  walletAdapterIdentity,
+  toMetaplexFile,
+} from "@metaplex-foundation/js";
+import { Connection, clusterApiUrl, PublicKey } from "@solana/web3.js";
+import axios from "axios";
+import { WalletContextState } from "@solana/wallet-adapter-react";
+import { uploadToPinata } from "./mint-vibe";
+const connection = new Connection(clusterApiUrl("devnet"));
+const PINATA_API_KEY = process.env.NEXT_PUBLIC_PINATA_API_KEY!;
+const PINATA_SECRET_API_KEY = process.env.NEXT_PUBLIC_PINATA_SECRET_API_KEY!;
 
 
-// export function useUserCollection(metaplex: Metaplex) {
-//     const { publicKey } = useWallet();
-//     const [collectionMint, setCollectionMint] = useState<PublicKey | null>(null);
-//     const [loading, setLoading] = useState(false);
+async function uploadMetadataToPinata(metadata: object): Promise<string> {
+  const res = await axios.post("https://api.pinata.cloud/pinning/pinJSONToIPFS", metadata, {
+    headers: {
+      pinata_api_key: PINATA_API_KEY,
+      pinata_secret_api_key: PINATA_SECRET_API_KEY,
+    },
+  });
+
+  return `https://gateway.pinata.cloud/ipfs/${res.data.IpfsHash}`;
+}
+
+export async function createCollectionIfMissing(
+  wallet: WalletContextState,
+  name: string,
+  description: string,
+  image: Blob
+): Promise<string> {
+  const metaplex = Metaplex.make(connection).use(walletAdapterIdentity(wallet));
   
-    
-//     useEffect(() => {
-//       if (!publicKey) return;
+  const imageUri = await uploadToPinata(image, "collection-image.png");
   
-//       const fetchCollection = async () => {
-//         setLoading(true);
-//         try {
-//           const allNfts = await metaplex.nfts().findAllByOwner({ owner: publicKey }).run();
-//           const collection = allNfts.find((nft) => nft.collectionDetails?.__kind === "V1");
+  const metadata = {
+    name,
+    symbol: "VIBE",
+    description,
+    image: imageUri,
+    properties: {
+      creators: [{ address: wallet.publicKey!, share: 100 }],
+      files: [{ uri: imageUri, type: "image/png" }],
+    },
+  };
+
+  console.log(metadata)
+
+  const metadataUri = await uploadMetadataToPinata(metadata);
+
+  console.log(metadataUri)
+  const { nft } = await metaplex.nfts().create({
+    uri: metadataUri,
+    name,
+    symbol: "VIBE",
+    sellerFeeBasisPoints: 0,
+    isCollection: true,
+  });
   
-//           if (collection?.collection?.verified && collection.collection.address) {
-//             setCollectionMint(collection.collection.address);
-//           } else {
-//             setCollectionMint(null);
-//           }
-//         } catch (e) {
-//           console.error("Error fetching collection:", e);
-//           setCollectionMint(null);
-//         } finally {
-//           setLoading(false);
-//         }
-//       };
-  
-//       fetchCollection();
-//     }, [publicKey?.toBase58()]);
-  
-//     return { collectionMint, loading };
-//   }
+  console.log(nft)
+  return nft.address.toBase58();
+}

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
-//import { createCollectionIfMissing } from "@/lib/collection-utils";
+import { createCollectionIfMissing } from "@/lib/collection-utils";
 import { FiUploadCloud } from "react-icons/fi";
 
 interface Props {
@@ -38,8 +38,8 @@ export default function CreateCollectionPrompt({ onCollectionCreated }: Props) {
     setStatus("Creating collection...");
 
     try {
-      //await createCollectionIfMissing(wallet, collectionName, description, image);
-      setStatus("Collection created successfully!");
+      const mintAddress = await createCollectionIfMissing(wallet, collectionName, description, image);
+      setStatus(`✅ Collection created: ${mintAddress}`);
       onCollectionCreated();
     } catch (err) {
       console.error(err);
