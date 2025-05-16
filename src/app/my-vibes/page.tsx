@@ -24,15 +24,28 @@ export default function MyVibesPage() {
       try {
         const connection = new Connection(clusterApiUrl("devnet"));
         const metaplex = new Metaplex(connection).use(walletAdapterIdentity(wallet));
-        const allNFTs = await metaplex.nfts().findAllByOwner({ owner: wallet.publicKey! });        
-        const vibeNFTs = (allNFTs || [])
-          .filter((nft) => nft.symbol === "VIBE")          
-          .map((nft) => ({            
-            name: nft.name || "Vibe NFT",
-            image: nft.uri || "",
-            mint: nft.address.toBase58(),
-          }));
-          
+        const allNFTs = await metaplex.nfts().findAllByOwner({ owner: wallet.publicKey! });
+        const vibeNFTs: VibeNFT[] = [];
+
+        for (const nft of allNFTs || []) {
+          if (nft.symbol !== "VIBE") continue;
+
+          try {
+            const metadataRes = await fetch(nft.uri);
+            const metadata = await metadataRes.json();
+            vibeNFTs.push({
+              name: nft.name || "Vibe NFT",
+              image: metadata.image || "",
+              mint: nft.address.toBase58(),
+            });
+          } catch (e) {
+            console.warn(`Failed to fetch metadata for ${nft.name}`, e);
+          }
+        }
+
+        setVibes(vibeNFTs);
+
+
         setVibes(vibeNFTs);
       } catch (err) {
         console.error("Error loading NFTs", err);
