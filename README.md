@@ -1,15 +1,15 @@
-# ✨ Aura Mint — Capture the Vibe
+#  Aura Mint — Capture the Vibe
 
 Welcome to **Aura Mint**, a fresh and emotional take on NFTs. This project is being built with love, creativity, and some caffeine for the [🛠 hackathon we're participating in]!
 
-## 🚀 What's Aura Mint?
+##  What's Aura Mint?
 
 In the fast-paced world of Web3, we're missing something...  
 **Feelings. Energy. Vibes.**
 
 **Aura Mint** lets you mint a unique NFT that captures the *vibe* of a moment — a mood, a phrase, an energy, or a message you want to lock forever on the blockchain.
 
-### 🌈 Use Cases
+###  Use Cases
 - **Group chats**: Capture the energy of a legendary moment.
 - **Events**: Mint the collective vibe of a meetup or a moment.
 - **Creators**: Drop personal moods as limited edition tokens.
