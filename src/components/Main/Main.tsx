@@ -32,7 +32,7 @@ export default function AboutProject() {
       <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center mt-24">
         <div className="order-2 md:order-1" />
         <div className="order-1 md:order-2">
-          <h2 className="text-3xl font-bold mb-6">Where We're Headed 🚀</h2>
+          <h2 className="text-3xl font-bold mb-6">Where We`&apos;`re Headed 🚀</h2>
           <ul className="list-disc list-inside text-gray-400 space-y-4">
             <li>Launch of <span className="text-white">full NFT minting</span> on Solana</li>
             <li>Introduction of <span className="text-white">collectible badges</span> for loyal vibers</li>

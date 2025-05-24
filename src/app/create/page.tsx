@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { mintAndSendVibeNFT } from "@/lib/mint-vibe";
 import { FiCamera, FiUploadCloud } from "react-icons/fi";
 //import { useUserCollection } from "@/lib/collection-utils";
+import Image from 'next/image';
 import CreateCollectionPrompt from "@/components/CreateCollectionPrompt/CreateCollectionPrompt";
 
 export default function CreateVibeForm() {
@@ -15,7 +16,7 @@ export default function CreateVibeForm() {
   const [loading, setLoading] = useState(false);
   const [photo, setPhoto] = useState<Blob | null>(null);
   const [mode, setMode] = useState<"camera" | "upload" | null>(null);
-  const [collectionAddress, setCollectionAddress] = useState<string | null>(null);
+  //const [collectionAddress, setCollectionAddress] = useState<string | null>(null);
   const [showCollectionPrompt, setShowCollectionPrompt] = useState(true);
 
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -213,7 +214,7 @@ export default function CreateVibeForm() {
             <p className="mb-2 text-gray-300">
               <span className="text-green-400 mr-1">📸</span> Preview:
             </p>
-            <img
+            <Image
               src={URL.createObjectURL(photo)}
               alt="Preview"
               className="rounded-md w-full h-auto object-cover"

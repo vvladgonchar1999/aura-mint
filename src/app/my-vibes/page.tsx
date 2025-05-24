@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { Metaplex, walletAdapterIdentity } from "@metaplex-foundation/js";
-import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
-
+import { clusterApiUrl, Connection } from "@solana/web3.js";
+import Image from 'next/image';
 type VibeNFT = {
   name: string;
   image: string;
@@ -75,7 +75,7 @@ export default function MyVibesPage() {
                 key={vibe.mint}
                 className="bg-zinc-900 rounded-xl p-4 shadow-lg hover:scale-105 transition"
               >
-                <img
+                <Image
                   src={vibe.image}
                   alt={vibe.name}
                   className="rounded-lg w-full h-60 object-cover mb-4"

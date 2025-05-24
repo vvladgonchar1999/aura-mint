@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from 'next/image';
 
 const mockVibes = [
   {
@@ -41,9 +42,9 @@ export default function VibesOfTheMonth() {
               className="bg-zinc-900 rounded-2xl shadow-lg p-4 hover:scale-105 transition-transform"
             >
               <div className="w-full h-48 rounded-xl overflow-hidden mb-4">
-                <img
+                <Image
                   src={vibe.image}
-                  alt={vibe.phrase}
+                  alt={vibe.phrase}                  
                   className="w-full h-full object-cover"
                 />
               </div>

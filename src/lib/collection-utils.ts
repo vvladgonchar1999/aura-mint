@@ -1,10 +1,8 @@
 import {
-  Metaplex,
-  keypairIdentity,
+  Metaplex,  
   walletAdapterIdentity,
-  toMetaplexFile,
 } from "@metaplex-foundation/js";
-import { Connection, clusterApiUrl, PublicKey } from "@solana/web3.js";
+import { Connection, clusterApiUrl} from "@solana/web3.js";
 import axios from "axios";
 import { WalletContextState } from "@solana/wallet-adapter-react";
 import { uploadToPinata } from "./mint-vibe";
