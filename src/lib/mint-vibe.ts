@@ -1,6 +1,6 @@
 import { WalletContextState } from "@solana/wallet-adapter-react";
 import { Metaplex, walletAdapterIdentity } from "@metaplex-foundation/js";
-import { Connection, PublicKey, clusterApiUrl, } from "@solana/web3.js";
+import { Connection, clusterApiUrl, } from "@solana/web3.js";
 
 
 export async function mintAndSendVibeNFT(
@@ -8,7 +8,7 @@ export async function mintAndSendVibeNFT(
   name: string,
   message: string,  
   photo: Blob,
-  collectionAddress?:string
+  //collectionAddress?:string
 ): Promise<string> {
   if (!wallet || !wallet.publicKey || !wallet.signTransaction) {
     throw new Error("Wallet not connected or incomplete");
