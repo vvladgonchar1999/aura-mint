@@ -65,6 +65,26 @@ export async function mintAndSendVibeNFT(
   //   }
   // }
 
+  // Store vibe data in MongoDB
+  try {
+    const response = await fetch('/api/vibes', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        creatorAddress: wallet.publicKey.toBase58(),
+        mintAddress: nft.address.toBase58(),
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('Failed to store vibe data:', await response.text());
+    }
+  } catch (error) {
+    console.error('Error storing vibe data:', error);
+  }
+
   return nft.address.toBase58();
 }
 
