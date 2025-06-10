@@ -25,8 +25,7 @@ export default function AboutProject() {
             </li>
           </ul>
         </div>
-
-        <div /> {/* empty column for layout balance */}
+       
       </div>
 
       <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center mt-24">

@@ -8,7 +8,7 @@ const mockVibes = [
     id: 1,
     phrase: "Together we rise",
     author: "@sunnyViber",
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxtgWq1avszGJli33oIKDkKs5f7XyJkT_zwA&s",  
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxtgWq1avszGJli33oIKDkKs5f7XyJkT_zwA&s",
   },
   {
     id: 2,
@@ -32,24 +32,25 @@ const mockVibes = [
 
 export default function VibesOfTheMonth() {
   return (
-    <section className="bg-black text-white py-8 sm:py-16 min-h-screen">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <h2 className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-10">🌟 Vibes of the Month</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+    <section className="bg-black text-white py-16 min-h-screen">
+      <div className="max-w-6xl mx-auto px-6">
+        <h2 className="text-4xl font-bold mb-10">🌟 Vibes of the Month</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {mockVibes.map((vibe) => (
             <div
               key={vibe.id}
-              className="bg-zinc-900 rounded-2xl shadow-lg p-4 hover:scale-105 transition-transform duration-200"
+              className="bg-zinc-900 rounded-2xl shadow-lg p-4 hover:scale-105 transition-transform"
             >
-              <div className="relative w-full aspect-square rounded-xl overflow-hidden mb-4">
+              <div className="w-full h-48 rounded-xl overflow-hidden mb-4">
                 <Image
                   src={vibe.image}
-                  alt={vibe.phrase}  
-                  fill
-                  className="object-cover"
+                  alt={vibe.phrase}
+                  width={500}  
+                  height={300}         
+                  className="w-full h-full object-cover"
                 />
               </div>
-              <p className="text-lg sm:text-xl font-semibold mb-2">&quot;{vibe.phrase}&quot;</p>
+              <p className="text-xl font-semibold mb-2">&quot;{vibe.phrase}&quot;</p>
               <p className="text-sm text-gray-400">{vibe.author}</p>
             </div>
           ))}
