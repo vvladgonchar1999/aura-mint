@@ -78,6 +78,8 @@ export default function MyVibesPage() {
                 <Image
                   src={vibe.image}
                   alt={vibe.name}
+                  width={500}  
+                  height={300} 
                   className="rounded-lg w-full h-60 object-cover mb-4"
                 />
                 <p className="text-lg font-semibold">{vibe.name}</p>

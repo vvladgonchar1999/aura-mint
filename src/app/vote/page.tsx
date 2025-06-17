@@ -1,88 +1,53 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Metadata, Metaplex } from "@metaplex-foundation/js";
-import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
 import Image from 'next/image';
 
-interface VibeNFT {
+interface Vibe {
+  id: number;
+  nft_address: string;
+  author_address: string;
   name: string;
-  image: string;
-  mint: string;
-  voted: boolean;
+  message: string;
+  created_at: string;
+  votes?: number;
 }
 
 export default function VibeVotePage() {
-  const [nfts, setNfts] = useState<VibeNFT[]>([]);
+  const [vibes, setVibes] = useState<Vibe[]>([]);
   const [loading, setLoading] = useState(false);
 
+  const fetchVibes = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/nfts/list');
+      if (!response.ok) throw new Error('Failed to fetch vibes');
+      
+      const data = await response.json();
+      setVibes(data);
+    } catch (error) {
+      console.error('Error fetching vibes:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchNFTs = async () => {
-      setLoading(true);
-      try {
-        const connection = new Connection(clusterApiUrl("devnet"));
-        const metaplex = new Metaplex(connection);
-
-        const knownMints = [
-          "Fg6PaFpoGXkYsidMpWxqSWzkQ2PKkF5Z4tZ5V1ADt7Be",
-        ];
-
-        const metadataList = await metaplex.nfts().findAllByMintList({
-          mints: knownMints.map((m) => new PublicKey(m)),
-        });
-
-        const validMetadata = metadataList.filter(
-          (nft): nft is Metadata => nft !== null && nft.model === 'metadata'
-        );
-
-        const vibeNFTs: VibeNFT[] = [];
-
-        for (const metadata of validMetadata) {
-          if (!metadata) continue;
-          const nft = await metaplex.nfts().load({ metadata });
-
-          if (nft.symbol === "VIBE") {
-            
-            type NFTAttribute = {
-              trait_type: string;
-              value: string | number;
-            };
-
-            const createdAt = (nft.json?.attributes as NFTAttribute[] | undefined)?.find(
-              (a: NFTAttribute) => a.trait_type === "createdAt"
-            )?.value;
-
-            const createdTime = createdAt ? new Date(String(createdAt)).getTime() : 0;
-            const oneMonthAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
-
-            if (createdTime > oneMonthAgo) {
-              vibeNFTs.push({
-                name: nft.name,
-                image: nft.json?.image || "",
-                mint: nft.address.toBase58(),
-                voted: localStorage.getItem(`voted-${nft.address.toBase58()}`) === "true",
-              });
-            }
-          }
-        }
-
-        setNfts(vibeNFTs);
-      } catch (e: unknown) {
-        const error = e instanceof Error ? e.message : 'Get vibe failed';
-        console.error("Failed to fetch NFTs:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchNFTs();
+    fetchVibes();
   }, []);
 
-  const handleVote = (mint: string) => {
-    localStorage.setItem(`voted-${mint}`, "true");
-    setNfts((prev) =>
-      prev.map((n) => (n.mint === mint ? { ...n, voted: true } : n))
-    );
+  const handleVote = async (nftAddress: string) => {
+    try {      
+      setVibes(prev => 
+        prev.map(vibe => 
+          vibe.nft_address === nftAddress 
+            ? { ...vibe, votes: (vibe.votes || 0) + 1 }
+            : vibe
+        )
+      );
+    } catch (error) {
+      console.error('Error voting:', error);
+    }
   };
 
   return (
@@ -91,28 +56,35 @@ export default function VibeVotePage() {
         <h2 className="text-4xl font-bold mb-8">🔥 Vibes of the Month</h2>
 
         {loading ? (
-          <p>Loading vibes...</p>
-        ) : nfts.length === 0 ? (
-          <p>No vibes found for this month.</p>
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+          </div>
+        ) : vibes.length === 0 ? (
+          <p className="text-center text-gray-400">No vibes found for this month.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-            {nfts.map((nft) => (
-              <div key={nft.mint} className="bg-zinc-900 p-4 rounded-xl shadow hover:scale-105 transition">
-                <Image
-                  src={nft.image}
-                  alt={nft.name}
-                  className="rounded-lg w-full h-60 object-cover mb-4"
-                />
-                <p className="text-lg font-semibold">{nft.name}</p>
-                <p className="text-xs text-gray-500 truncate mb-2">{nft.mint}</p>
-                <button
-                  onClick={() => handleVote(nft.mint)}
-                  disabled={nft.voted}
-                  className={`w-full mt-2 py-2 rounded font-bold transition ${nft.voted ? "bg-green-600" : "bg-blue-600 hover:bg-blue-700"
-                    }`}
-                >
-                  {nft.voted ? "✅ Voted" : "Vote"}
-                </button>
+            {vibes.map((vibe) => (
+              <div key={vibe.nft_address} className="bg-zinc-900 p-4 rounded-xl shadow hover:scale-105 transition">
+                <div className="relative w-full aspect-square mb-4">
+                  <Image
+                    src={`https://arweave.net/${vibe.nft_address}`}
+                    alt={vibe.name}
+                    fill
+                    className="rounded-lg object-cover"
+                  />
+                </div>
+                <p className="text-lg font-semibold">{vibe.name}</p>
+                <p className="text-sm text-gray-400 mb-2">{vibe.message}</p>
+                <p className="text-xs text-gray-500 truncate mb-2">Author: {vibe.author_address}</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-purple-400">Votes: {vibe.votes || 0}</span>
+                  <button
+                    onClick={() => handleVote(vibe.nft_address)}
+                    className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded transition"
+                  >
+                    Vote
+                  </button>
+                </div>
               </div>
             ))}
           </div>
