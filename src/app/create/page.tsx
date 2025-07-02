@@ -7,6 +7,7 @@ import { FiCamera, FiUploadCloud } from "react-icons/fi";
 //import { useUserCollection } from "@/lib/collection-utils";
 import Image from 'next/image';
 import CreateCollectionPrompt from "@/components/CreateCollectionPrompt/CreateCollectionPrompt";
+import styles from "./page.module.css";
 
 export default function CreateVibeForm() {
   const wallet = useWallet();
@@ -97,11 +98,6 @@ export default function CreateVibeForm() {
       return;
     }
 
-    // if (!collectionAddress) {
-    //   alert("Please create your NFT collection first.");
-    //   return;
-    // }
-
     setLoading(true);
     setStatus("Minting and sending NFT...");
 
@@ -110,8 +106,27 @@ export default function CreateVibeForm() {
     setMode(null);
 
     try {
-      const mint = await mintAndSendVibeNFT(wallet, nftName, message, photo, ); //collectionAddress
-      setStatus(`NFT minted successfully! Mint Address: ${mint}`);
+      const mint = await mintAndSendVibeNFT(wallet, nftName, message, photo);
+      
+      
+      const saveResponse = await fetch('/api/nfts/save', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nftAddress: mint,
+          authorAddress: wallet.publicKey.toBase58(),
+          nftName,
+          message
+        }),
+      });
+
+      if (!saveResponse.ok) {
+        throw new Error('Failed to save vibe');
+      }
+
+      setStatus(`NFT minted and saved successfully! Mint Address: ${mint}`);
     } catch (error) {
       console.error("Error minting and sending NFT:", error);
       setStatus(`Failed to mint NFT.`);
@@ -125,15 +140,15 @@ export default function CreateVibeForm() {
   // }
 
  return (
-  <div className="relative min-h-screen bg-gray-900">
+  <div className={styles.root}>
     {showCollectionPrompt && (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-gray-900 text-white p-4 sm:p-6 rounded-lg shadow-md w-full max-w-xl mx-auto relative">
+      <div className={styles.promptOverlay}>
+        <div className={styles.promptBox}>
           <button
             onClick={handleCloseCollectionPrompt}
-            className="absolute top-2 right-2 text-gray-400 hover:text-gray-100 cursor-pointer p-2"
+            className={styles.closeButton}
           >
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className={styles.closeIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -142,21 +157,21 @@ export default function CreateVibeForm() {
       </div>
     )}
 
-    <div className="container mx-auto px-4 py-8 sm:py-12">
-      <div className="bg-gray-900 shadow-lg rounded-lg p-4 sm:p-6 md:p-8 w-full max-w-xl mx-auto text-white">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-center text-purple-400">
-          Create a Vibe NFT <span className="text-yellow-400">✨</span>
+    <div className={styles.container}>
+      <div className={styles.formBox}>
+        <h1 className={styles.title}>
+          Create a Vibe NFT <span className={styles.titleAccent}>✨</span>
         </h1>
 
-        <div className="space-y-4 sm:space-y-6">
+        <div className={styles.formFields}>
           <div>
-            <label htmlFor="nftName" className="block text-gray-300 text-sm font-bold mb-2">
+            <label htmlFor="nftName" className={styles.label}>
               NFT Name
             </label>
             <input
               type="text"
               id="nftName"
-              className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-800"
+              className={styles.input}
               placeholder="Your Vibe name..."
               value={nftName}
               onChange={(e) => setNftName(e.target.value)}
@@ -164,12 +179,12 @@ export default function CreateVibeForm() {
           </div>
 
           <div>
-            <label htmlFor="vibeMessage" className="block text-gray-300 text-sm font-bold mb-2">
+            <label htmlFor="vibeMessage" className={styles.label}>
               Vibe Message
             </label>
             <textarea
               id="vibeMessage"
-              className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-800"
+              className={styles.input}
               rows={3}
               placeholder="Enter your message..."
               value={message}
@@ -177,39 +192,39 @@ export default function CreateVibeForm() {
             />
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className={styles.photoButtons}>
             <button
               onClick={startCamera}
-              className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline flex items-center justify-center flex-1"
+              className={styles.cameraButton}
             >
-              <FiCamera className="mr-2" />
+              <FiCamera className={styles.icon} />
               Open Camera
             </button>
 
-            <label className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline cursor-pointer flex items-center justify-center flex-1">
-              <FiUploadCloud className="mr-2" />
+            <label className={styles.uploadLabel}>
+              <FiUploadCloud className={styles.icon} />
               Upload Photo
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleFileUpload}
-                className="hidden"
+                className={styles.uploadInput}
               />
             </label>
           </div>
 
           {mode === "camera" && (
-            <div className="border rounded-md p-3 bg-gray-800">
+            <div className={styles.cameraPreview}>
               <video 
                 ref={videoRef} 
-                className="w-full h-auto max-h-64 rounded-md mb-3" 
+                className={styles.video} 
                 autoPlay 
                 playsInline
               />
               <canvas ref={canvasRef} style={{ display: "none" }} />
               <button
                 onClick={takePhoto}
-                className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+                className={styles.takePhotoButton}
               >
                 Take Photo
               </button>
@@ -217,16 +232,16 @@ export default function CreateVibeForm() {
           )}
 
           {photo && (
-            <div className="border rounded-md p-3 bg-gray-800">
-              <p className="mb-2 text-gray-300">
-                <span className="text-green-400 mr-1">📸</span> Preview:
+            <div className={styles.photoPreview}>
+              <p className={styles.photoPreviewText}>
+                <span className={styles.photoPreviewIcon}>📸</span> Preview:
               </p>
-              <div className="relative w-full aspect-square">
+              <div className={styles.photoPreviewImageWrapper}>
                 <Image
                   src={URL.createObjectURL(photo)}
                   alt="Preview"
                   fill
-                  className="rounded-md object-cover"
+                  className={styles.photoPreviewImage}
                   unoptimized={true}
                 />
               </div>
@@ -235,14 +250,14 @@ export default function CreateVibeForm() {
 
           <button
             onClick={handleMint}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline w-full"
+            className={styles.mintButton}
             disabled={loading}
           >
             {loading ? (
-              <span className="flex items-center justify-center">
-                <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <span className={styles.loadingSpinnerWrapper}>
+                <svg className={styles.loadingSpinner} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className={styles.loadingSpinnerCircle} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className={styles.loadingSpinnerPath} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
                 Processing...
               </span>
@@ -250,8 +265,8 @@ export default function CreateVibeForm() {
           </button>
 
           {status && (
-            <div className="mt-4 p-3 bg-gray-800 rounded-md">
-              <p className="text-gray-300">{status}</p>
+            <div className={styles.statusBox}>
+              <p className={styles.statusText}>{status}</p>
             </div>
           )}
         </div>
