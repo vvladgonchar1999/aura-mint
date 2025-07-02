@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from 'next/image';
+import styles from "./page.module.css";
 
 const mockVibes = [
   {
@@ -32,26 +33,26 @@ const mockVibes = [
 
 export default function VibesOfTheMonth() {
   return (
-    <section className="bg-black text-white py-16 min-h-screen">
-      <div className="max-w-6xl mx-auto px-6">
-        <h2 className="text-4xl font-bold mb-10">🌟 Vibes of the Month</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+    <section className={styles.section}>
+      <div className={styles.container}>
+        <h2 className={styles.title}>🌟 Vibes of the Month</h2>
+        <div className={styles.grid}>
           {mockVibes.map((vibe) => (
             <div
               key={vibe.id}
-              className="bg-zinc-900 rounded-2xl shadow-lg p-4 hover:scale-105 transition-transform"
+              className={styles.card}
             >
-              <div className="w-full h-48 rounded-xl overflow-hidden mb-4">
+              <div className={styles.imageWrapper}>
                 <Image
                   src={vibe.image}
                   alt={vibe.phrase}
                   width={500}  
                   height={300}         
-                  className="w-full h-full object-cover"
+                  className={styles.image}
                 />
               </div>
-              <p className="text-xl font-semibold mb-2">&quot;{vibe.phrase}&quot;</p>
-              <p className="text-sm text-gray-400">{vibe.author}</p>
+              <p className={styles.nftPhrase}>&quot;{vibe.phrase}&quot;</p>
+              <p className={styles.nftAuthor}>{vibe.author}</p>
             </div>
           ))}
         </div>

@@ -5,6 +5,8 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { Metaplex, walletAdapterIdentity } from "@metaplex-foundation/js";
 import { clusterApiUrl, Connection } from "@solana/web3.js";
 import Image from 'next/image';
+import styles from "./page.module.css";
+
 type VibeNFT = {
   name: string;
   image: string;
@@ -58,32 +60,32 @@ export default function MyVibesPage() {
   }, [wallet]);
 
   return (
-    <section className="bg-black text-white py-16 min-h-screen">
-      <div className="max-w-6xl mx-auto px-6">
-        <h2 className="text-4xl font-bold mb-8">🌈 My Vibes</h2>
+    <section className={styles.section}>
+      <div className={styles.container}>
+        <h2 className={styles.title}>🌈 My Vibes</h2>
 
         {!wallet.connected ? (
-          <p className="text-gray-400">Please connect your wallet to view your vibe NFTs.</p>
+          <p className={styles.infoText}>Please connect your wallet to view your vibe NFTs.</p>
         ) : loading ? (
-          <p className="text-gray-400">Loading your vibes...</p>
+          <p className={styles.infoText}>Loading your vibes...</p>
         ) : vibes.length === 0 ? (
-          <p className="text-gray-400">No VIBE NFTs found in your wallet.</p>
+          <p className={styles.infoText}>No VIBE NFTs found in your wallet.</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+          <div className={styles.grid}>
             {vibes.map((vibe) => (
               <div
                 key={vibe.mint}
-                className="bg-zinc-900 rounded-xl p-4 shadow-lg hover:scale-105 transition"
+                className={styles.card}
               >
                 <Image
                   src={vibe.image}
                   alt={vibe.name}
                   width={500}  
                   height={300} 
-                  className="rounded-lg w-full h-60 object-cover mb-4"
+                  className={styles.image}
                 />
-                <p className="text-lg font-semibold">{vibe.name}</p>
-                <p className="text-sm text-gray-500 truncate">{vibe.mint}</p>
+                <p className={styles.nftName}>{vibe.name}</p>
+                <p className={styles.nftMint}>{vibe.mint}</p>
               </div>
             ))}
           </div>

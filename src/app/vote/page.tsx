@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from 'next/image';
+import styles from "./page.module.css";
 
 interface Vibe {
   id: number;
@@ -51,36 +52,36 @@ export default function VibeVotePage() {
   };
 
   return (
-    <section className="bg-black text-white py-16 min-h-screen">
-      <div className="max-w-6xl mx-auto px-6">
-        <h2 className="text-4xl font-bold mb-8">🔥 Vibes of the Month</h2>
+    <section className={styles.section}>
+      <div className={styles.container}>
+        <h2 className={styles.title}>🔥 Vibes of the Month</h2>
 
         {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+          <div className={styles.loaderWrapper}>
+            <div className={styles.loader}></div>
           </div>
         ) : vibes.length === 0 ? (
-          <p className="text-center text-gray-400">No vibes found for this month.</p>
+          <p className={styles.emptyText}>No vibes found for this month.</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+          <div className={styles.grid}>
             {vibes.map((vibe) => (
-              <div key={vibe.nft_address} className="bg-zinc-900 p-4 rounded-xl shadow hover:scale-105 transition">
-                <div className="relative w-full aspect-square mb-4">
+              <div key={vibe.nft_address} className={styles.card}>
+                <div className={styles.imageWrapper}>
                   <Image
                     src={`https://arweave.net/${vibe.nft_address}`}
                     alt={vibe.name}
                     fill
-                    className="rounded-lg object-cover"
+                    className={styles.image}
                   />
                 </div>
-                <p className="text-lg font-semibold">{vibe.name}</p>
-                <p className="text-sm text-gray-400 mb-2">{vibe.message}</p>
-                <p className="text-xs text-gray-500 truncate mb-2">Author: {vibe.author_address}</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-purple-400">Votes: {vibe.votes || 0}</span>
+                <p className={styles.nftName}>{vibe.name}</p>
+                <p className={styles.nftMessage}>{vibe.message}</p>
+                <p className={styles.nftAuthor}>Author: {vibe.author_address}</p>
+                <div className={styles.cardFooter}>
+                  <span className={styles.votes}>Votes: {vibe.votes || 0}</span>
                   <button
                     onClick={() => handleVote(vibe.nft_address)}
-                    className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded transition"
+                    className={styles.voteButton}
                   >
                     Vote
                   </button>
